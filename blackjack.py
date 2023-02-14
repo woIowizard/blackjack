@@ -552,21 +552,20 @@ elif args.T:
     res = count_stats
 else:
     res = profit_stats
-    edge = all_profits/all_bets
-    total_num_rounds = winning_rounds + losing_rounds + even_rounds
+    edge = -all_profits/all_bets
     
     print('MONEY')
     print('Total bets: %s'%all_bets)
     print('Total profit: %s'%all_profits)
-    print('Estimated house edge: %s (%s%%)'%(-edge,round(-edge*100,2)))
+    print('Estimated house edge: %s (%s%%)'%(edge,round(edge*100,2)))
     print('Lowest negative profit: %s'%lowest_negative)
     print('Highest positive profit: %s'%highest_positive)
 
     print('\nROUNDS STATS')
-    print('Number of rounds: %s'%total_num_rounds)
-    print('Profitable rounds: %s (%s%% of rounds)'%(winning_rounds,round(100*winning_rounds/total_num_rounds,2)))
-    print('Losing rounds: %s (%s%% of rounds)'%(losing_rounds,round(100*losing_rounds/total_num_rounds,2)))
-    print('Even rounds: %s (%s%% of rounds)'%(even_rounds,round(100*even_rounds/total_num_rounds,2)))
+    print('Number of rounds: %s'%n)
+    print('Profitable rounds: %s (%s%% of rounds)'%(winning_rounds,round(100*winning_rounds/n,2)))
+    print('Losing rounds: %s (%s%% of rounds)'%(losing_rounds,round(100*losing_rounds/n,2)))
+    print('Even rounds: %s (%s%% of rounds)'%(even_rounds,round(100*even_rounds/n,2)))
     print('Longest winning streak: %s'%longest_winning_streak)
     print('Longest losing streak: %s'%longest_losing_streak)
 
