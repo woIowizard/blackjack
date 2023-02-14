@@ -6,7 +6,7 @@ p = argparse.ArgumentParser()
 p.add_argument('-n',help='number of rounds')
 p.add_argument('-B',help='CSM buffer (default %s)'%buffer)
 p.add_argument('-D',help='CSM deck size (default %s)'%decks)
-p.add_argument('-c',help='force count. single value, \'[min],[max]\', or \'A\' for -10 to +15. \'m\' for negative values')
+p.add_argument('-c',help='force count. single value, \'[min],[max]\', \'A\' for -10 to +15, \'B\' for [-10,0,+15]. \'m\' for negative values')
 p.add_argument('-b',help='bet amount for uniform betting strategy (default %s)'%bet)
 p.add_argument('-p',help='number of pockets for uniform betting strategy (default %s)'%pockets)
 p.add_argument('-S',help='non-uniform betting strategy (4 integer params)')
@@ -25,6 +25,7 @@ try:
 except: n = 1
 try: 
     if args.c == 'A': c = range(-10,16)
+    elif args.c == 'B': c = [-10,0,+15]
     elif ',' not in args.c: c = [int(args.c)]
     else: c = range(int(args.c.replace('m','-').split(',')[0]),int(args.c.replace('m','-').split(',')[1])+1)
 except: c = [None]
