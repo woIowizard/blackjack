@@ -8,7 +8,7 @@ Scripts to help with formulating a card counting strategy for Blackjack.<br>
 
 ## Summary
 
-It is well-known that Blackjack can be beaten with card counting. It is also thought that continuous shuffling machines make card counting obsolete by making forthcoming cards less predictable. However, it turns out that CSMs have a mechanical feature that allows for some (albeit limited) degree of card counting. Moreover, cardplay and betting strategies can be formulated to exploit this limited degree of card counting to give the player a positive edge over the house. blackjack.py simulates Blackjack games at a rate of about 6 million rounds per hour, allowing us to test the long term results of various cardplay strategies. Given a cardplay strategy, stratfind.py performs an exhaustive search to find a betting strategy that gives the player a positive edge, if one exists. Using these scripts, we found an overall strategy with an expected value of 0.04%.
+It is well-known that Blackjack can be beaten with card counting. It is also thought that continuous shuffling machines make card counting obsolete by making forthcoming cards less predictable. However, it turns out that CSMs have a mechanical feature that allows for some (albeit limited) degree of card counting. This collection of scripts will help us to determine whether the allowed extent of card counting can be exploited to give the player a positive edge over the house. To test the long term results of various cardplay strategies, blackjack.py simulates Blackjack games at a rate of about 6 million rounds per hour. Given the performance of a cardplay strategy, stratfind.py performs an exhaustive search to find a betting strategy that gives the player a positive edge, if one exists. Using these scripts, we found an overall strategy with an edge of ???% in favour of the player.
 
 <hr />
 
@@ -46,47 +46,47 @@ The results of the simulation come close to known values from [publicly availabl
 
 In what follows, our goal is to formulate a strategy that not only improves (that is, lowers) the house edge, but gives the player a positive edge.
 
-A popular method for beating Blackjack involves _counting_, in which a player keeps track of cards that are dealt so they can infer that some cards are less likely to be dealt at a later time. A high count indicates that low cards are less likely to be dealt, which favours the player; and a low count inversely. Counting strategies recommend varying bets in response to the count such that bets are more aggressive under favourable conditions, and on balance the player makes positive profit despite losing more often than winning. Modern anti-counting measures limit the extent to which extreme count values obtain, but we will see that with the right strategy, the player still has an edge.
+A popular method for beating Blackjack involves _card counting_, in which a player keeps track of cards that are dealt so they can infer that some cards are less likely to be dealt at a later time. Continuous shuffling machines hinder counting by limiting the number of cards in each round that are affected by the count to a small buffer. In its default setting, blackjack.py simulates a CSM containing 6 decks and with a buffer size of 7; these parameters can be overwritten with the -D and -B options.
 
-Our strategy comprises two parts: a cardplay strategy and a betting strategy.
+We will see that with the right strategy, the player may still obtain an edge against a CSM. Our strategy comprises two parts: a cardplay strategy and a betting strategy.
 
 ## Baseline
-We consider the cardplay strategy first. Without counting in view, it can be taken for granted that basic strategy is optimum. We'll also consider the profitability of deviations from basic strategy when counts are considered. Before considering deviations, we first establish a baseline by estimating the house edge at each count under basic strategy. The following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds, resetting the deck to the target count value after each round:
+We consider the cardplay strategy first. Without counting in view, it can be taken for granted that basic strategy is optimum. We'll also consider the profitability of deviations from basic strategy when counts are considered. Before considering deviations, we first establish a baseline by estimating the house edge at each count, and for each possible number of pockets between 1 and 5, under basic strategy. The following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds with 1 pocket each, resetting the deck to the target count value after each round:
 
-```blackjack -n 5M -c A```
+```blackjack -n 5M -p 1 -c A```
 
 ![baseline-sims](img/baseline-sims.png)
 
 The results are as follows
 
-|Count|House edge|
-|---|---|
-|-10|0.012221606614317001|
-|-9|0.011291634197813545|
-|-8|0.010316601698307414|
-|-7|0.009622422706049637|
-|-6|0.008091993398447753|
-|-5|0.007473694702378382|
-|-4|0.006783346864058707|
-|-3|0.005657720467871067|
-|-2|0.0049484485004801316|
-|-1||
-|0||
-|+1||
-|+2||
-|+3||
-|+4||
-|+5||
-|+6||
-|+7|-0.0035070876689777294|
-|+8|-0.0041564303885434405|
-|+9|-0.004884026733779522|
-|+10|-0.0054818300732502835|
-|+11|-0.006401835884773169|
-|+12|-0.007217752905056158|
-|+13|-0.008693626930809283%|
-|+14|-0.009665851218720763%|
-|+15|-0.010416117595270703%|
+|Count|1 pocket|2 pockets|3 pockets|4 pockets|5 pockets|
+|---|---|---|---|---|---|
+|-10|||||0.004945398695516308|
+|-9||||||
+|-8||||||
+|-7||||||
+|-6||||||
+|-5||||||
+|-4||||||
+|-3||||||
+|-2||||||
+|-1|||||0.003531767357204792|
+|0||||||
+|1||||||
+|2||||||
+|3|||||0.00300819823727895|
+|4||||||
+|5||||||
+|6||||||
+|7||||||
+|8||||||
+|9||||||
+|10||||||
+|11||||||
+|12||||||
+|13||||||
+|14||||||
+|15||||||
 
 
 ## Deviations
