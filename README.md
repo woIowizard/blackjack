@@ -46,16 +46,16 @@ The results of the simulation come close to known values from [publicly availabl
 
 In what follows, our goal is to formulate a strategy that not only improves (that is, lowers) the house edge, but gives the player a positive edge.
 
-A popular method for beating Blackjack involves _card counting_, in which a player keeps track of cards that are dealt so they can infer that some cards are less likely to be dealt at a later time. Continuous shuffling machines hinder counting by limiting the number of cards in each round that are affected by the count to a small buffer. In its default setting, blackjack.py simulates a CSM containing 6 decks and with a buffer size of 7; these parameters can be overwritten with the -D and -B options.
+A popular method for beating Blackjack involves _card counting_, in which a player keeps track of cards that are dealt so they can infer that some cards are less likely to be dealt at a later time. Continuous shuffling machines hinder counting by limiting the number of cards in each round that are affected by the count to a small buffer. In its default setting, blackjack.py simulates a CSM containing 6 decks and with a buffer size of 7; these parameters can be overwritten with the -D and -B options. 
 
-We will see that with the right strategy, the player may still obtain an edge against a CSM. Our strategy comprises two parts: a cardplay strategy and a betting strategy.
+We will see that with the right strategy, the player may still obtain an edge against a CSM. Our strategy comprises two parts: a betting strategy and a cardplay strategy.
 
-## Baseline
-We consider the cardplay strategy first. Without counting in view, it can be taken for granted that basic strategy is optimum. We'll also consider the profitability of deviations from basic strategy when counts are considered. Before considering deviations, we first establish a baseline by estimating the house edge at each count, and for each possible number of pockets between 1 and 5, under basic strategy. The following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds with 1 pocket each, resetting the deck to the target count value after each round:
+## Count-based edge
+A card counting strategy depends on the fact that 
+
+We consider the betting strategy first. Without counting in view, it can be taken for granted that basic strategy is optimum. We'll also consider the profitability of deviations from basic strategy when counts are considered. Before considering deviations, we first establish a baseline by estimating the house edge at each count, and for each possible number of pockets between 1 and 5, under basic strategy. The following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds with 1 pocket each, resetting the deck to the target count value after each round:
 
 ```blackjack -n 5M -p 1 -c A```
-
-![baseline-sims](img/baseline-sims.png)
 
 The results are as follows
 
@@ -78,15 +78,17 @@ The results are as follows
 |+4|-0.0025560282249800998|-0.00033442546020584247|0.0007725405476669174|0.0018599562805691264|0.0026493602757631345|
 |+5|-0.004027763909616168|-0.0006315308691586994|0.0004747360764874424|0.001643239164622021|0.002627666104594382|
 |+6|-0.004394573000260474|-0.0012798814516555835|-0.0001937948539014972|0.0016154935073989013|0.0025636522161200147|
-|+7|-0.0058235973110688614|-0.0018700420107552072|-0.00022422719320835813|0.0006354904158950463||
-|+8|-0.006778641924954072|-0.00213920002581661|-0.0017971414315791877|0.0007142566308130077||
-|+9|-0.00759413918779642|-0.0028242902771010805|-0.0020902929803202457|0.00044006980557444284||
-|+10|-0.008343678850129651|-0.003036382932112425|-0.0024974100153926297|-0.000011448263086234053||
-|+11|-0.008549077529171351|-0.004339783934296084|-0.00325965135183103|-0.00006402785827965067||
-|+12|-0.0099832763366042|-0.0048168307418231145|-0.003798874791735491|-0.00007304457969314693||
-|+13|-0.010368139824911554|-0.005484249231865061|-0.004138324442514168|-0.0003533425615425447||
-|+14|-0.011811942849545513|-0.005820875681446687|-0.004968275015734912|-0.0008037669976417831||
-|+15|-0.011899512332873544|-0.006464019614031691|-0.0056238337371237665|-0.0009543623331261183||
+|+7|-0.0058235973110688614|-0.0018700420107552072|-0.00022422719320835813|0.0006354904158950463|0.0025416399765091804|
+|+8|-0.006778641924954072|-0.00213920002581661|-0.0017971414315791877|0.0007142566308130077|0.002409873699951947|
+|+9|-0.00759413918779642|-0.0028242902771010805|-0.0020902929803202457|0.00044006980557444284|0.00214851344032793|
+|+10|-0.008343678850129651|-0.003036382932112425|-0.0024974100153926297|-0.000011448263086234053|0.001993111193396823|
+|+11|-0.008549077529171351|-0.004339783934296084|-0.00325965135183103|-0.00006402785827965067|0.0019698237857178|
+|+12|-0.0099832763366042|-0.0048168307418231145|-0.003798874791735491|-0.00007304457969314693|0.001769250976507185|
+|+13|-0.010368139824911554|-0.005484249231865061|-0.004138324442514168|-0.0003533425615425447|0.001751618080345252|
+|+14|-0.011811942849545513|-0.005820875681446687|-0.004968275015734912|-0.0008037669976417831|0.0014224655014291097|
+|+15|-0.011899512332873544|-0.006464019614031691|-0.0056238337371237665|-0.0009543623331261183|0.0011601868948847651|
+
+## Transition probabilities
 
 
 ## Deviations
@@ -97,3 +99,4 @@ We'll test the possible profitabily of the following deviations from basic strat
 - don't split: As against 10, 8s against 9
 - don't surrender on hard 14
 
+  
