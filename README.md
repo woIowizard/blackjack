@@ -51,13 +51,11 @@ A popular method for beating Blackjack involves _card counting_, in which a play
 We will see that with the right strategy, the player may still obtain an edge against a CSM. Our strategy comprises two parts: a betting strategy and a cardplay strategy.
 
 ## Count-based edge
-A card counting strategy depends on the fact that 
-
-We consider the betting strategy first. Without counting in view, it can be taken for granted that basic strategy is optimum. We'll also consider the profitability of deviations from basic strategy when counts are considered. Before considering deviations, we first establish a baseline by estimating the house edge at each count, and for each possible number of pockets between 1 and 5, under basic strategy. The following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds with 1 pocket each, resetting the deck to the target count value after each round:
+A card-counting-based betting strategy involves varying bets such that the player bets more aggressively when the count entails a favourable edge. To formulate such a strategy, we seek to know how the house edge varies with count. Moreover, it turns out that for a CSM with small buffer size, the house edge also depends on the number of pockets played (since a larger number of pockets runs out the buffer more quickly, increasing the proportion of cards in a round not affected by the count). The following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds with 1 pocket each, resetting the deck to the target count value after each round:
 
 ```blackjack -n 5M -p 1 -c A```
 
-The results are as follows
+The results are as follows:
 
 |Count|1 pocket|2 pockets|3 pockets|4 pockets|5 pockets|
 |---|---|---|---|---|---|
@@ -89,7 +87,21 @@ The results are as follows
 |+15|-0.011899512332873544|-0.006464019614031691|-0.0056238337371237665|-0.0009543623331261183|0.0011601868948847651|
 
 ## Transition probabilities
+In addition to affecting the house edge in the present round, the number of pockets played also indirectly affects the house edge in the next round, because playing a larger number of pockets in one round increases the probability that a more extreme-valued count would obtain in the next round. We thus seek to know also the _transition probabilities_ from number of pockets to counts. The following command runs a simulation of 10M rounds with 1 pocket each, computing the proportion of round that end in each count from -10 to +15
 
+```blackjack -p 1 -n 10M -T```
+
+The following are the estimated transition probabilities:
+
+|Count|1 pocket|2 pockets|3 pockets|4 pockets|5 pockets|
+|---|---|---|---|---|---|
+
+
+## Betting strategy
+
+![stratfind-help](img/stratfind-help.png)
+
+![stratfind-use](img/stratfind-use.png)
 
 ## Deviations
 We'll test the possible profitabily of the following deviations from basic strategy
