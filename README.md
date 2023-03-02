@@ -1,8 +1,8 @@
 # blackjack
 
 Scripts to help with formulating a card counting strategy for Blackjack.<br>
-* blackjack.py--Run simulations of the game
-* stratfind.py--Find a betting strategy with positive expected value, if one exists
+* blackjack.py--Runs simulations of the game
+* stratfind.py--Finds a betting strategy with positive expected value, if one exists
 
 <hr />
 
@@ -12,7 +12,7 @@ It is well-known that Blackjack can be beaten with card counting. It is also tho
 
 <hr />
 
-## Usage
+## blackjack.py
 
 Run blackjack.py with the -h option to see the available options.
 
@@ -122,12 +122,35 @@ The following are the estimated transition probabilities:
 |14|4e-07|1.6e-06|7.7e-06|3.4e-05|9.23e-05|
 |15|1e-07|9e-07|4.2e-06|1.79e-05|4.92e-05|
 
+We will have to consider both the per-count edge and the transition probabilities in formulating a favourable betting strategy. This is where stratfind.py comes in.
 
-## Betting strategy
+
+## stratfind.py
+
+Stratfind.py takes as input two matrices containing the per-count edges and transition probabilities, and runs a brute-force algorithm to find a betting strategy that gives the player an edge above a specified threshold. The strategy to be identified has the following form<br>
+(i) if at a particular count, the player does not have positive edge at any number of pockets, bet the minimum and play a number of pockets to be determined between 1-5<br>
+(ii) if at a particular count, the player can attain positive edge for some number of pockets, play the number of pockets that maximises the player's edge and bet x*minimum*c, where c is the count and x is a natural number to be determined.<br>
+This betting strategy follows the typical pattern for card-counting strategies: bet conservatively at unfavourable counts and aggressively at favourable counts. 
+
+In its default setting, stratfind takes the minimum to be $25, searches upward from x=1 without limit, tries all possible numbers of pockets from 1-5 for part (i) of the strategy, and seeks a strategy with positive edge. These can be overridden with the following options
 
 ![stratfind-help](img/stratfind-help.png)
 
-![stratfind-use](img/stratfind-use.png)
+Given the matrices above, a full brute force search would take considerable time (5^12 > 200M trials for each value of x). We thus begin with a heurisitic search to estimate the minimum viable value of x. In a heuristic search, instead of trying all possible numbers of pockets from 1-5, stratfind only tries the extreme values 1 and 5, which reduces the number of trials to 2^12 = 4096 for each value of x. The following command runs a heuristic search:
+
+```stratfind -H```
+
+![stratfind-quick](img/stratfind-quick.png)
+
+Stratfind finds that a positive edge is possible at x=2. We thus perform a full brute-force search at that value of x:
+
+```stratfind -s 2```
+
+![stratfind-full](img/stratfind-full.png)
+
+We might be curious as to whether a more robust edge can be obtained
+
+![stratfind-edge](img/stratfind-edge.png)
 
 ## Deviations
 We'll test the possible profitabily of the following deviations from basic strategy
