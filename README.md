@@ -167,11 +167,11 @@ To formulate a cardplay strategy, we'll test the possible profitabily of the fol
 |Strategy|-10|0|+15|
 |---|---|---|---|
 |Baseline|0.00994066872522887|0.0017503436572156898|-0.0046238337371237665|
-|Split 10 against 2-9|||
-|Split 10 against 2|||
-|Split 10 against 9|||
-|Split 9 against 7|||
-|Split A against A|||
+|Split 10 against 2-9|0.013291908320854213|0.005599867417652645|-0.0008497423705041022|
+|Split 10 against 2||||
+|Split 10 against 9||||
+|Split 9 against 7||||
+|Split A against A||||
 
 
 |Count|Baseline|Deviation|
