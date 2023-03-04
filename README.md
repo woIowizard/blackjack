@@ -154,14 +154,51 @@ Running blackjack.py with the -S option implements this betting strategy. A simu
 
 ```blackjack -n 5M -S```
 
-
+![betstrat-confirm](img/betstrat-confirm.png)
 
 ## Deviations
-We'll test the possible profitabily of the following deviations from basic strategy
+To formulate a cardplay strategy, we'll test the possible profitabily of the following deviations from basic strategy
 - split: 10s against 2-9, 10s against 2, 10s against 9, 9s against 7, As against A
 - double on: hard 10/11 against 10, hard 9 against 2-9, hard 12 against 2-9, soft 17/18 against 2, soft 17/18 against 7, soft 13/14 against 4, soft 13/14 against 7, soft 19 against 3-6
 - surrender on: hard 13 against 10, hard 14/15 against 9, hard 16 against 8, hard 17 against 9/10
 - don't split: As against 10, 8s against 9
 - don't surrender on hard 14
 
-  
+|Strategy|-10|0|+15|
+|---|---|---|---|
+|Baseline|0.00994066872522887|0.0017503436572156898|-0.0046238337371237665|
+|Split 10 against 2-9|||
+|Split 10 against 2|||
+|Split 10 against 9|||
+|Split 9 against 7|||
+|Split A against A|||
+
+
+|Count|Baseline|Deviation|
+|---|---|---|
+|-10|0.00994066872522887|
+|-9|0.009248761787154614|
+|-8|0.007519810075717198|
+|-7|0.007216943548658794|
+|-6|0.0061815451425469535|
+|-5|0.005421561641010196|
+|-4|0.0049465737514518|
+|-3|0.0035710564478636155|
+|-2|0.003031661088540082|
+|-1|0.002172563220872002|
+|0|0.0017503436572156898|
+|1|0.0005362795421797175|
+|2|-0.0008680833862761178|
+|3|-0.0011047235118650934|
+|4|-0.0015560282249800998|
+|5|-0.003027763909616168|
+|6|-0.0033945730002604736|
+|7|-0.004823597311068861|
+|8|-0.005778641924954072|
+|9|-0.00659413918779642|
+|10|-0.007343678850129651|
+|11|-0.007549077529171351|
+|12|-0.008983276336604201|
+|13|-0.003138324442514168|
+|14|-0.003968275015734912|
+|15|-0.0046238337371237665|
