@@ -9,7 +9,7 @@ p.add_argument('-D',help='CSM deck size (default %s)'%decks)
 p.add_argument('-c',help='force count. single value, \'[min],[max]\', \'A\' for -10 to +15, \'B\' for [-10,0,+15]. \'m\' for negative values')
 p.add_argument('-b',help='bet amount for uniform betting strategy (default %s)'%bet)
 p.add_argument('-p',help='number of pockets for uniform betting strategy (default %s)'%pockets)
-p.add_argument('-S',help='non-uniform betting strategy (4 integer params)')
+p.add_argument('-S',action='store_true',help='non-uniform betting strategy')
 p.add_argument('-r',help='report points (default %s)'%report)
 p.add_argument('-d',action='store_true',help='implement deviations from basic strategy')
 p.add_argument('-V',action='store_true',help='run one round with verbosity')
@@ -24,10 +24,11 @@ try:
     assert n > 0
 except: n = 1
 try: 
+    args.c = args.c.replace('m','-')
     if args.c == 'A': c = range(-10,16)
     elif args.c == 'B': c = [-10,0,+15]
     elif ',' not in args.c: c = [int(args.c)]
-    else: c = range(int(args.c.replace('m','-').split(',')[0]),int(args.c.replace('m','-').split(',')[1])+1)
+    else: c = range(int(args.c.split(',')[0]),int(args.c.split(',')[1])+1)
 except: c = [None]
 try:
     assert int(args.B) >= 0
@@ -61,17 +62,8 @@ if args.V:
     n,c = 1,[None]
 print('[%s] running %s round %ssimulation with %s'%(datetime.datetime.now().replace(microsecond=0),n,'verbose ' if args.V else '','deviations' if args.d else 'basic strategy'))
 
-# parse strategy
-strat = (pockets,bet)
-if args.S:
-    try: 
-        temp = [int(c) for c in args.S.split(',')]
-        assert len(temp) == 4 and temp[3] > 0 and temp[1] > 0
-        strat = temp
-    except: print('[%s] -S option invalid, defaulting to uniform'%(datetime.datetime.now().replace(microsecond=0)))
-
-if len(strat) == 2: print('[%s] strategy: uniform. pockets: %s, bet: %s'%(datetime.datetime.now().replace(microsecond=0),pockets,bet))
-else: print('[%s] strategy: counting. pockets: 3 up to count %s, 5 after. bets: %s up to count %s, %s*count after'%(datetime.datetime.now().replace(microsecond=0),strat[0],strat[1],strat[2],strat[3]*strat[1]))
+if args.S: print('[%s] strategy: counting. 1 pocket up to count +12, 3 after. $25 up to count +1, $75*count after'%(datetime.datetime.now().replace(microsecond=0)))
+else: print('[%s] strategy: uniform. pockets: %s, bet: %s'%(datetime.datetime.now().replace(microsecond=0),pockets,bet))
 
 # continuous shuffling machine
 class CSM():
@@ -87,20 +79,21 @@ class CSM():
         bigs = ['A',10,'J','Q','K']*4*self.n
         smalls = [2,3,4,5,6]*4*self.n
         mids = [7,8,9]*4*self.n
+        popped = []
         
         if count > 0:
             random.shuffle(smalls)
-            for _ in range(count): smalls.pop()
+            for _ in range(count): popped.append(smalls.pop())
         elif count < 0:
             random.shuffle(bigs)
-            for _ in range(-count): bigs.pop()
+            for _ in range(-count): popped.append(bigs.pop())
         
         self.deck = bigs + smalls + mids
         random.shuffle(self.deck)
+        self.restore(popped)
    
     def restore(self,hand):
-        to_shuffle = self.deck[:-self.buffer] + hand
-        to_keep = self.deck[-self.buffer:]
+        to_shuffle, to_keep = self.deck[:-self.buffer] + hand, self.deck[-self.buffer:]
         random.shuffle(to_shuffle)
         self.deck = to_shuffle + to_keep
 
@@ -154,7 +147,11 @@ def should_split(hand,exposed,count,deviate):
     if value([card]) != value([hand.hand[1]]): return False
     
     # deviations
-    if deviate: pass
+    if deviate:
+        # split 10s against 2-9
+        #if card == 10 and exposed in range(2,10): return True
+        if card == 10 and exposed == 9: return True
+        
         # deviation: if count >= 8, also split As against A
         #if deviate and count >= 8 and card == 'A' and exposed == 11: return True
         # deviation: if count <= -8, also split 9s against 7
@@ -482,8 +479,7 @@ for fc in c:
             count = fc
         
         # set betting strat
-        if len(strat) == 4: pockets,bet = 3 if count <= strat[0] else 5,strat[1] if count <= strat[2] else strat[1]*strat[3]*count
-        else: pockets,bet = strat
+        if args.S: pockets,bet = 1 if count < 13 else 3,25 if count < 2 else 75*count
             
         # play a round
         profits,bets,dealt = play_one_round(pockets,bet,deck,count,verbose=bool(args.V),deviate=bool(args.d))
@@ -532,12 +528,28 @@ for fc in c:
         deck.restore(dealt)
 
         if i and not i%report: print('[%s] %s/%s rounds done. estimated house edge: %s%%'%(datetime.datetime.now().replace(microsecond=0),i,n,-round(100*all_profits/all_bets,2)))
+        
+        if args.o and c == [None] and not args.T:
+            try: 
+                with open(args.o,'a') as f: f.write('%s\n'%all_profits)
+            except: print('[%s] error writing to outfile'%(datetime.datetime.now().replace(microsecond=0)))
 
-    if len(c) > 1:
+    if c != [None]:
         edge = -all_profits/all_bets
         print('[%s] finished %s simulations with forced count %s. house edge: %s'%(datetime.datetime.now().replace(microsecond=0),n,fc,edge))
+        if args.o:
+            try: 
+                with open(args.o,'a') as f: f.write('%s: %s\n'%(fc,edge))
+            except: print('[%s] error writing to outfile'%(datetime.datetime.now().replace(microsecond=0)))
         edge_by_count[fc] = edge
-        
+    if args.T:
+        tp = {i:count_stats[i][0]/n for i in range(-10,16)}
+        print('[%s] transition probabilities: %s'%(datetime.datetime.now().replace(microsecond=0),tp))
+        if args.o:
+            try: 
+                with open(args.o,'a') as f: f.write('%s\n'%tp)
+            except: print('[%s] error writing to outfile'%(datetime.datetime.now().replace(microsecond=0)))
+
     
 if not args.V: print('[%s] done!\n'%(datetime.datetime.now().replace(microsecond=0)))    
 print('===== RESULTS =====')
@@ -547,12 +559,10 @@ if args.V:
     print('total profit: %s'%all_profits)
 elif len(c) > 1:
     for i in c: print('house edge at forced count %s: %s%%'%(i,edge_by_count[i]))
-    res = edge_by_count
 elif args.T:
-    for i in range(-10,16): print('transition probability to count %s: %s%%'%(i,count_stats[i][0]/n))
-    res = count_stats
+    print('TRANSITION PROBABILITIES')
+    for i in range(-10,16): print('%s: %s'%(i,count_stats[i][0]/n))
 else:
-    res = profit_stats
     edge = -all_profits/all_bets
     
     print('MONEY')
@@ -561,7 +571,7 @@ else:
     print('Estimated house edge: %s (%s%%)'%(edge,round(edge*100,2)))
     print('Lowest negative profit: %s'%lowest_negative)
     print('Highest positive profit: %s'%highest_positive)
-
+    quit()
     print('\nROUNDS STATS')
     print('Number of rounds: %s'%n)
     print('Profitable rounds: %s (%s%% of rounds)'%(winning_rounds,round(100*winning_rounds/n,2)))
@@ -573,10 +583,4 @@ else:
     print('\nCOUNT STATS')
     for i in range(-10,16):
         if count_stats[i][0]: print('%s: %s rounds (%s%%), profit %s (estimated ev %s%%)'%(i,count_stats[i][0],round(100*count_stats[i][0]/n,2),count_stats[i][1],round(100*count_stats[i][1]/count_stats[i][2],2)))
-
-
-if args.o:
-    try: 
-        with open(args.o,'w') as f: f.write(str(res))
-    except: print('[%s] error writing to outfile. printing results to console\n\n%s'%(datetime.datetime.now().replace(microsecond=0),res))
-
+    
