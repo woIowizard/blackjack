@@ -175,6 +175,22 @@ The observed house edges are as follows:
 |Split 10 against 9|0.009497115787199983|0.0011595819239482534|-0.003299006574022928|
 |Split 9 against 7|0.008968004445809004|0.00004165253366838492|-0.005217902365448402|
 |Split A against A|0.009234368239258111|-0.0005092892628557069|-0.005954250808266156|
+|double hard 10/11 against 10||||
+|double hard 9 against 2-9||||
+|double hard 12 against 2-9||||
+|double soft 17/18 against 2||||
+|double soft 17/18 against 7||||
+|double soft 13/14 against 4||||
+|double soft 13/14 against 7||||
+|double soft 19 against 3-6||||
+|surrender hard 13 against 10||||
+|surrender hard 14/15 against 9||||
+|surrender hard 16 against 8||||
+|surrender hard 17 against 9/10||||
+|don't split A against 10||||
+|don't split 8 against 9||||
+|don't surrender hard 14||||
+
 
 Based on this rough estimate, the viable deviations are:
 ...
