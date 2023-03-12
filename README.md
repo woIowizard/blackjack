@@ -192,7 +192,12 @@ The observed house edges are as follows:
 |Don't surrender hard 14|0.00923402482594167|-0.0007080942643767037|-0.00641383428800706|
 
 Based on this rough estimate, the viable deviations are:
-...
+- split 9 against 7
+- split A against A
+- double soft 17/18 against 2
+- double soft 13/14 against 4
+- double soft 13/14 against 7
+- don't surrender hard 14
 The other possible deviations did not show significant improvements from basic strategy at either low, high, or middling counts, and thus did not warrant further investigation. We did more thorough tests of the shortlisted viable deviations, running simulations of 5 million rounds at each count from -10 to 15. The following command runs the test
 
 ```blackjack -S -n 5M -c A -d```
