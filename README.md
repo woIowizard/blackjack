@@ -145,11 +145,15 @@ A strategy of edge 0.0444% is possible at x=3. Given the uniformity of pocket nu
 - at counts +12 and below, play 1 pocket; at counts +13 and above, play 3 pockets
 - at counts +1 and below, bet $25; at counts +2 and above, bet $75*count
 
-Running blackjack.py with the -S option implements this betting strategy. A simulation of 5 million rounds confirms that we've found a betting strategy with player-favourable edge:
+<hr />
 
-```blackjack -n 5M -S```
+## Validation
+Running blackjack.py with the -S option implements this betting strategy. A simulation of 10 million rounds confirms that we've found a betting strategy with player-favourable edge:
+
+```blackjack -n 10M -S```
 
 ![betstrat-confirm](img/betstrat-confirm.png)
+
 
 <hr />
 
@@ -198,9 +202,9 @@ Based on this rough estimate, the viable deviations are:
 - double soft 13/14 against 4
 - double soft 13/14 against 7
 - don't surrender hard 14<br>
-The other possible deviations did not show significant improvements from basic strategy at either low, high, or middling counts, and thus did not warrant further investigation. We did more thorough tests of the shortlisted viable deviations, running simulations of 5 million rounds at each count from -10 to 15. The following command runs the test
+The other possible deviations did not show significant improvements from basic strategy at either low, high, or middling counts, and thus did not warrant further investigation. We did more thorough tests of the shortlisted viable deviations, running simulations of 3 million rounds at each count from -10 to 15. The following command runs the test
 
-```blackjack -S -n 5M -c A -d```
+```blackjack -S -n 3M -c A -d```
 
 The per-count edges for each viable deviation are as follows:
 
@@ -232,6 +236,8 @@ The per-count edges for each viable deviation are as follows:
 |13|-0.004638324442514169|-0.004429890362372543|-0.004813623166605195|-0.004270810372930756|-0.0046461722546595145|-0.0038253112860975576|-0.004844969515120273|
 |14|-0.0054682750157349115|-0.004920584473516753|-0.004764577596430223|-0.005429666087455441|-0.004500599387333098|-0.004366393292507006|-0.005577021214551287|
 |15|-0.006123833737123767|-0.006505736265983462|-0.0057997148444618955|-0.005782548573829851|-0.006168052075461693|-0.00475935352985052|-0.005886061481225696|
+
+The results showed significant variance due to the relatively small number of rounds. Nevertheless they seem sufficient to conclude that deviating from basic strategy would not yield significant edge improvements.
 
 <hr />
 
