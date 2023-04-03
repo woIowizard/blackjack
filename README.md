@@ -247,5 +247,16 @@ The results showed significant variance due to the relatively small number of ro
 <hr />
 
 ## How practical is this?
+The results above indicate theoretical long-term profits. In practice, however, time and money constraints might limit the effectiveness of card-counting as a money-making method. To get a sense for how the above strategy might play out in practice, we run 144000 round simulations, corresponding to approximate number of rounds that may be expected to be played in a year (50 weeks x 48 hours/week x 1 round/min). The following command runs 100 such simulations:
 
 ```foreach ($i in 1..100){echo "===== TRIAL $i =====";blackjack -S -n 144000;echo "";echo ""}```
+
+The raw results from these trials are in practical-trial.txt. A summary of the key findings is as follows:
+
+||profit|lowest negative|highest positive|
+|---|---|---|---|
+|min|-64000.0|-83512.5|387.5|
+|max|150525.0|-425.0|150750.0|
+|ave|18166.125|-24644.125|47603.875|
+
+We observe that although the average estimated annual profit is positive, the negative loss can go below -80k, and indeed goes below 50k in 14% of the trials. The average annual profits and highest positive profits also varied quite widely in the trials. So despite the theoretical profitability of the strategy above, it is in practice rather risky as a money-making method.
