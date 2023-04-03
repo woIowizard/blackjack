@@ -247,7 +247,7 @@ The results showed significant variance due to the relatively small number of ro
 <hr />
 
 ## How practical is this?
-The results above indicate theoretical long-term profits. In practice, however, time and money constraints might limit the effectiveness of card-counting as a money-making method. To get a sense for how the above strategy might play out in practice, we run 144000 round simulations, corresponding to approximate number of rounds that may be expected to be played in a year (50 weeks x 48 hours/week x 1 round/min). The following command runs 100 such simulations:
+The results above indicate theoretical long-term profits. In practice, however, time and money constraints might limit the effectiveness of card-counting as a money-making method. To get a sense for how the above strategy might play out in practice, we run 144000 round simulations, corresponding to approximate number of rounds that may be expected to be played in a year (50 weeks x 48 hours/week x 1 round/min). The following command in Powershell runs 100 such simulations:
 
 ```foreach ($i in 1..100){echo "===== TRIAL $i =====";blackjack -S -n 144000;echo "";echo ""}```
 
