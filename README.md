@@ -154,7 +154,7 @@ Running blackjack.py with the -S option implements this strategy. As validation,
 
 ![betstrat-confirm](img/validation.png)
 
-We observe from the results that the player came out with a .09% profit. Moreover, the profit margin was positive (albeit with some fluctation) at every intermediate point taken at 1 million round intervals, indicating the stability of this result. It may also be observed that there were significantly more losing rounds than profitable rounds, with 42% of rounds being profitable and 50% of rounds losing. Nevertheless, the profitable rounds at favourable counts (>= +2) returned gains that outweighed the losses from losing rounds, hence the overall favourable edge. This is typicaly of card counting strategies. Hence, we have used card counting to beat Blackjack, even in the presence of a continuous shuffling machine. 
+We observe from the results that the player came out with a .09% profit. Moreover, the profit margin was positive (albeit with some fluctation) at every intermediate point taken at 1 million round intervals, indicating the stability of this result. It may also be observed that there were significantly more losing rounds than profitable rounds, with 42% of rounds being profitable and 50% of rounds losing. Nevertheless, the profitable rounds at favourable counts (>= +2) returned gains that outweighed the losses from losing rounds, hence the overall favourable edge. This is typical of card counting strategies. Hence, we have used card counting to beat Blackjack, even in the presence of a continuous shuffling machine. 
 
 
 <hr />
@@ -259,4 +259,4 @@ The raw results from these trials are in practical-trial.txt. A summary of the k
 |max|150525.0|-425.0|150750.0|
 |ave|18166.125|-24644.125|47603.875|
 
-We observe that although the average estimated annual profit is positive, the negative loss can go below -80k, and indeed goes below 50k in 14% of the trials. The average annual profits and highest positive profits also varied quite widely in the trials. So despite the theoretical profitability of the strategy above, it is in practice rather risky as a money-making method.
+We observe that although the average estimated annual profit is positive, the negative loss can go below -80k, and indeed goes below -50k in 14% of the trials. The average annual profits and highest positive profits also varied quite widely in the trials. So despite the theoretical profitability of the strategy above, it is in practice rather risky as a money-making method.
