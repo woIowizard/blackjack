@@ -14,7 +14,7 @@ It is well-known that Blackjack can be beaten with card counting. It is also tho
 
 ## blackjack.py
 
-In its default setting, blackjack.py simulates a single round of Blackjack according to the rules [here](https://www.cra.gov.sg/docs/default-source/game-rule-documents/mbs-blackjack-v6.pdf). The simulated player opens 5 pockets with bets of $25 on each, and follows basic strategy. To see the simulated player's decisions in action, run
+In its default setting, blackjack.py simulates a single round of Blackjack according to the rules [here](https://www.gra.gov.sg/docs/default-source/game-rules/mbs/blackjack-pontoon-games/blackjack-pontoon---gra-website/mbs-blackjack-game-rules-version-63c8994ee-f3e8-4bfd-8398-dee76aa466ee.pdf?sfvrsn=3d3481e5_1). The simulated player opens 5 pockets with bets of $25 on each, and follows basic strategy. To see the simulated player's decisions in action, run
 
 ```blackjack -V```
 
