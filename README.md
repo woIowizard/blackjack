@@ -1,22 +1,20 @@
 # blackjack
 
-In this repo are scripts to help with formulating a card counting strategy for Blackjack.<br>
-* blackjack.py--runs simulations of the game
-* stratfind.py--finds a betting strategy with positive expected value, if one exists
+The scripts in this repo help to formulate a card counting strategy for Blackjack.<br>
+* blackjack.py runs simulations of the game
+* stratfind.py finds a betting strategy with positive expected value, if one exists
 
 <hr />
 
 ## Summary
 
-It is well-known that Blackjack can be beaten with card counting. It is also thought that continuous shuffling machines (CSMs) impede card counting by making forthcoming cards unpredictable. However, it turns out that CSMs have a mechanical feature that allows for some (albeit limited) degree of card counting. We show, using this pair of scripts, that the allowed extent of card counting is exploitable to give the player a positive edge over the house. Blackjack.py simulates Blackjack games at a rate of about 6 million rounds per hour, which allows us to test the long term results of various strategies. Stratfind.py uses an approximate brute-force algorithm to find a betting strategy that gives the player a positive edge. We found a strategy with a theoretical edge of 0.04% in favour of the player, which materialised as a 0.09% profit in an experiment of 10 million rounds.
+It is known that Blackjack can be beaten with card counting. It is also thought that continuous shuffling machines (CSMs) impede card counting by making forthcoming cards unpredictable. In practice, CSMs have a mechanical feature that allows for some (limited) degree of card counting. Using this pair of scripts, it can be shown that the allowed extent of card counting is exploitable to give the player a positive edge over the house. Blackjack.py simulates Blackjack games at a rate of about 6 million rounds per hour, which allows the long term results of strategies to be tested. Stratfind.py uses an approximate brute-force algorithm to find a betting strategy that gives the player a positive edge. A strategy is found with a 0.04% theoretical edge in favour of the player, which materialised as a 0.09% profit in an experiment of 10 million rounds.
 
 <hr />
 
 ## blackjack.py
 
-In its default setting, blackjack.py simulates a single round of Blackjack according to the rules [here](https://www.gra.gov.sg/docs/default-source/game-rules/mbs/blackjack-pontoon-games/blackjack-pontoon---gra-website/mbs-blackjack-game-rules-version-63c8994ee-f3e8-4bfd-8398-dee76aa466ee.pdf?sfvrsn=3d3481e5_1). The simulated player opens 5 pockets with bets of $25 on each, and follows basic strategy. To see the simulated player's decisions in action, run
-
-```blackjack -V```
+In its default setting, blackjack.py simulates a single round of Blackjack according to the rules [here](https://www.gra.gov.sg/docs/default-source/game-rules/mbs/blackjack-pontoon-games/blackjack-pontoon---gra-website/mbs-blackjack-game-rules-version-63c8994ee-f3e8-4bfd-8398-dee76aa466ee.pdf?sfvrsn=3d3481e5_1). The simulated player opens 5 pockets with bets of $25 on each, and follows basic strategy. To see the simulated player's decisions in action, run `blackjack -V`.
 
 ![verbose](img/verbose.png)
 
@@ -24,37 +22,31 @@ Run blackjack.py with the -h option to see other available options for overridin
 
 ![help](img/help.png)
 
-By simulation, we can verify that basic strategy alone is insufficient to give the player a favourable edge. The following command runs a simulation of 5 million rounds under basic strategy:
-
-```blackjack -n 5M```
+To run a simulation of 5 million rounds under basic strategy, run `blackjack -n 5M`
 
 ![standard-edge](img/standard-edge.png)
 
-The results of the simulation come close to known values from [publicly available sources](https://wizardofodds.com/games/blackjack/calculator/).
+The results of the simulation come close to [known values](https://wizardofodds.com/games/blackjack/calculator/). This verifies that basic strategy alone is insufficient to give the player a favourable edge.
 
 ![known-baseline](img/known-baseline.png)
 
-In what follows, our goal is to formulate a strategy that gives the player a favourable edge.
+We aim to formulate a strategy that gives the player a favourable edge.
 
 <hr />
 
 ## Card-counting theory
 
-A popular method for beating Blackjack involves _card counting_, in which a player keeps track of cards that are dealt so they can infer that forthcoming cards are more likely to be in their favour. More precisely, the count at any point is the number of high cards (10 to A) that have been dealt subtracted from the number of low cards (2 to 6) that have been dealt. A high (low) count indicates that forthcoming cards are likely to be high (low), which favours the player (house). Card counting is often used in conjunction with a betting strategy in which the player bets conservatively at low counts and aggressively at high counts, such that the player has an positive overall edge.
+A popular method for beating Blackjack is _card counting_, in which a player uses their knowledge of dealt cards to infer whether forthcoming cards are likely to be in their favour. The count at any point is the number of high cards (10 to A) that have been dealt subtracted from the number of low cards (2 to 6) that have been dealt. A high (low) count indicates that forthcoming cards are likely to be high (low), which favours the player (house). A betting strategy in which the player bets conservatively at low counts and aggressively at high counts may give the player a positive overall edge.
 
-The card-counting strategy works best when cards played are not shuffled back into the deck, so that the count reliably reflects the value of forthcoming cards. Continuous shuffling machines (CSMs) falsify this condition by allowing the dealer to shuffle, at the end of each round, the cards dealt in that round back into the deck. In theory, this would prevent card counting, since it seems to entail that likelihood of high cards being dealt in any round is independent of the cards played in the previous round. In practice, however, CSMs smoothen dealing by maintaining a small _buffer_ of cards that are not shuffled when cards are fed into the CSM. The count in a given round is thus a reliable guide to the likelihood of high cards coming from that buffer. It turns out that this degree of card counting, despite being extremely limited compared to the traditional method, is sufficient to formulate a strategy that gives the player a favourable edge.
+Card-counting works best when cards played are not shuffled back into the deck, but continuous shuffling machines (CSMs) allow the dealer to shuffle, at the end of each round, the cards dealt in that round back into the deck. In theory, this prevents card counting, because it implies that the cards dealt in each round is independent of those dealt in previous rounds. But in practice, CSMs maintain a small _buffer_ of cards that are not shuffled when cards are fed into the CSM, to smoothen dealing. This makes the count in a given round indicative of the likelihood of high cards coming from that buffer. It turns out that this degree of card counting, albeit extremely limited, admits a strategy that gives the player a favourable edge.
 
-In its default setting, blackjack.py implements a CSM containing 6 decks and with a 7-card buffer, which matches the apparent specifications of the CSM used in the casino at Marina Bay Sands. These parameters can be overridden with the -D and -B options.
+In its default setting, blackjack.py implements a CSM containing 6 decks and with a 7-card buffer, in line with the apparent specifications of the CSM used in the casino at Marina Bay Sands. These parameters can be overridden with the -D and -B options.
 
 <hr />
 
 ## Strategy formulation
 
-To formulate a strategy, we require to know how the house edge varies with the count. In addition, it turns out that for CSMs with a small buffer, the house edge also depends on the number of pockets played (since a larger number of pockets runs out the buffer more quickly, increasing the proportion of cards in a round not indicated by the count). Using blackjack.py, we ran simulations of 5 million rounds at each number of pockets from 1-5, and each count value from -10 to +15. For example, the following command runs, for each of the 26 possible count values from -10 to +15, a simulation of 5M rounds with 1 pocket each, resetting the deck to the target count value after each round:
-
-```blackjack -n 5M -p 1 -c A```
-
-The per-count estimated house edges are as follows:
+Formulating a strategy requires knowledge of how the house edge varies with the count. For CSMs with a small buffer, the house edge also depends on the number of pockets played (since a larger number of pockets runs out the buffer more quickly, increasing the proportion of cards in a round not indicated by the count). Using blackjack.py, we ran simulations of 5 million rounds at each number of pockets from 1-5, and each count value from -10 to +15. The per-count estimated house edges are as follows:
 
 |Count|1 pocket|2 pockets|3 pockets|4 pockets|5 pockets|
 |---|---|---|---|---|---|
@@ -85,11 +77,9 @@ The per-count estimated house edges are as follows:
 |14|-0.012311942849545511|-0.006320875681446687|-0.0054682750157349115|-0.001303766997641783|0.0009224655014291095|
 |15|-0.012399512332873544|-0.00696401961403169|-0.006123833737123767|-0.0014543623331261183|0.0006601868948847649|
 
-In contrast to the legacy shuffling system, in which the house edge at a count is independent of the number of pockets played, we observe that with a CSM, some count admit player-favourable edges at low pocket numbers but not high pocket numbers. This phenomenon is expected, for reasons given above, and must be accounted for because it limits how aggressive a betting strategy can be in terms of the number of pockets it plays.
+Unlike the legacy shuffling system, in which the house edge at a count is independent of the number of pockets played, some counts under a CSM admit player-favourable edges only at low pocket numbers. This was anticipated above, and must be considered when deciding how aggressive a betting strategy can be in terms of number of pockets. 
 
-Besides affecting the house edge in the present round, the number of pockets played also indirectly affects the house edge in the next round, because playing a larger number of pockets in one round increases the probability that a more extreme-valued count would obtain in the next round. To account for this, we seek to know the _transition probabilities_ from number of pockets to counts. That is, for each number of pockets from 1-5, we seek the probability that a round played with that number of pockets will end in a particular count value. (We assume for now that the cardplay strategy does not change with the count, so that the starting count value is unimportant. This assumption will become false later, but should not affect the results here too much.) The following command runs a simulation of 10 million rounds with 1 pocket each, reporting the proportion of rounds that end in each count from -10 to +15
-
-```blackjack -p 1 -n 10M -T```
+The number of pockets played also indirectly affects the house edge in the next round, because playing a larger number of pockets in one round increases the probability that a more extreme-valued count would obtain in the next round. To measure this effect, we need to know the _transition probabilities_ from number of pockets to counts. For each number of pockets from 1-5, we want to estimate the probability that a round played with that number of pockets will end in a particular count. We assume for simplicity that the cardplay strategy does not change with count, so that the starting count value is unimportant. The following command runs a simulation of 10 million rounds with 1 pocket each, reporting the proportion of rounds that end in each count from -10 to +15: `blackjack -p 1 -n 10M -T`.
 
 The following are the estimated transition probabilities:
 
@@ -122,57 +112,54 @@ The following are the estimated transition probabilities:
 |14|4e-07|1.6e-06|7.7e-06|3.4e-05|9.23e-05|
 |15|1e-07|9e-07|4.2e-06|1.79e-05|4.92e-05|
 
-Using these data, we can formulate a favourable betting strategy with stratfind.py. The script takes as input two matrices containing the per-count edges and transition probabilities, and runs an approximate brute-force algorithm to find a betting strategy that gives the player an edge above a specified threshold. The strategy to be identified has the following form<br>
+Stratfind.py uses this data to formulate a favourable betting strategy. The script takes as input two matrices containing the per-count edges and transition probabilities, and runs an approximate brute-force algorithm to find a betting strategy that gives the player an edge above a specified threshold. The strategy to be identified has the following form<br>
 (i) if at a particular count, the player does not have positive edge at any number of pockets, bet the minimum and play a number of pockets to be determined between 1-5<br>
-(ii) if at a particular count, the player can attain positive edge for some number of pockets, play the number of pockets that maximises the player's edge and bet x*minimum*c, where c is the count and x is a natural number to be determined.<br>
-This betting strategy follows the typical pattern for card-counting strategies: conservative at unfavourable counts and aggressive at favourable counts. 
+(ii) if at a particular count, the player can attain positive edge for some number of pockets, play the number of pockets that maximises the player's edge and bet x\*minimum\*c, where c is the count and x is a natural number to be determined.<br>
+This betting strategy follows the pattern of usual card-counting strategies: conservative at unfavourable counts and aggressive at favourable counts. 
 
-To improve the robustness of our results against random error in the trials above, we adjust the edge values by .0015 in favour of the house, thus forcing stratfind to find a strategy that favours the player even under possible handicap. In its default setting, stratfind takes the minimum to be $25, searches upward from x=1 without limit, and seeks a strategy with positive edge. These can be overridden with command-line options
+To improve the robustness of our results against random error in the trials above, the edge values are adjusted by .0015 in favour of the house, which forces stratfind to find a strategy that favours the player even under possible handicap. In its default setting, stratfind takes the minimum bet to be $25, searches upward from x=1 without limit, and seeks a strategy with positive edge. These can be overridden with command-line options
 
 ![stratfind-help](img/stratfind-help.png)
 
-Given the matrices above, a full brute-force search would take considerable time (5^12 > 200M trials for each value of x). Stratfind in its default setting thus does only an approximate brute-force search in which the number of pockets at odd-valued counts are assumed to be identical to those at the immediately-lower count--this can be overridden with the -F option. The approximation reduces the search space to 15625 trials at each value of x, which can be performed in below 5 seconds. Running `stratfind` without options begins the search:
+Given the matrices above, a full brute-force search would be impractical (5^12 > 200M trials for each value of x). Stratfind in its default setting does only an approximate brute-force search in which the number of pockets at odd-valued counts are assumed to be identical to those at the immediately-lower count--this can be overridden with the -F option. The approximation reduces the search space to 15625 trials at each value of x, which can be performed in below 5 seconds. Running `stratfind` without options begins the search:
 
 ![stratfind-first](img/stratfind-first.png)
 
-Stratfind finds that a positive edge of 0.0116% is possible at x=2. Given the wide possible variation in results, we might seek a yet more robust edge. The following command runs a brute-force search beginning at x=3 and sets the threshold to 0.02%:
-
-```stratfind -s 3 -b .0002```
+Stratfind finds that a positive edge of 0.0116% is possible at x=2. To find a more robust edge, we ran a brute-force search beginning at x=3 and set the threshold to 0.02%: `stratfind -s 3 -b .0002`.
 
 ![stratfind-second](img/stratfind-second.png)
 
-A strategy of edge 0.0444% is possible at x=3. Given the uniformity of pocket numbers from counts -10 to +1, a full brute force search seems unnecessary. Our strategy is hence as follows:
+A strategy of edge 0.0444% is possible at x=3. Given the uniformity of pocket numbers from counts -10 to +1, a full brute force search looks unnecessary. Our strategy is now:
 - at counts +12 and below, play 1 pocket; at counts +13 and above, play 3 pockets
 - at counts +1 and below, bet $25; at counts +2 and above, bet $75*count
 
 <hr />
 
 ## Validation
-Running blackjack.py with the -S option implements this strategy. As validation, we run a simulation of 10 million rounds:
-
-```blackjack -n 10M -S```
+Running blackjack.py with `-S` implements this strategy. As validation, we ran a simulation of 10 million rounds: `blackjack -n 10M -S`.
 
 ![betstrat-confirm](img/validation.png)
 
-We observe from the results that the player came out with a .09% profit. Moreover, the profit margin was positive (albeit with some fluctation) at every intermediate point taken at 1 million round intervals, indicating the stability of this result. It may also be observed that there were significantly more losing rounds than profitable rounds, with 42% of rounds being profitable and 50% of rounds losing. Nevertheless, the profitable rounds at favourable counts (>= +2) returned gains that outweighed the losses from losing rounds, hence the overall favourable edge. This is typical of card counting strategies. Hence, we have used card counting to beat Blackjack, even in the presence of a continuous shuffling machine. 
+Observations:
+- The player came out with a .09% profit.
+- The profit margin was positive (albeit with some fluctation) at every intermediate point taken at 1 million round intervals, indicating that this result is stable.
+- There were significantly more losing rounds than profitable rounds, with 42% of rounds being profitable and 50% of rounds losing.
+- The profitable rounds at favourable counts (>= +2) returned gains that outweighed the losses from losing rounds, which led to the overall favourable edge.
+The last two features are typical of card counting strategies. So, card counting can beat Blackjack even in the presence of a continuous shuffling machine. 
 
 
 <hr />
 
 ## Cardplay strategy
 
-Presumably, basic strategy represents the optimal count-insensitive cardplay strategy. With counting in view, however, it might be advantageous to deviate from basic strategy at certain count ranges. We will test the possible profitability of the following deviations from basic strategy:
+Presumably, basic strategy is the optimal count-insensitive cardplay strategy. With counting in view, it might be advantageous to deviate from basic strategy at certain count ranges. We will test the possible profitability of the following deviations from basic strategy:
 - split: 10s against 2-9, 10s against 2, 10s against 9, 9s against 7, As against A
 - double on: hard 10/11 against 10, hard 9 against 2-9, hard 12 against 2-9, soft 17/18 against 2, soft 17/18 against 7, soft 13/14 against 4, soft 13/14 against 7, soft 19 against 3-6
 - surrender on: hard 13 against 10, hard 14/15 against 9, hard 16 against 8, hard 17 against 9/10
 - don't split: As against 10, 8s against 9
 - don't surrender on hard 14
 
-Given the large number of possible deviations, it seemed impractical to run large numbers of simulations for each count value for each possible deviation. To narrow in on a shortlist of viable deviations, we first ran smaller simulations of 3 million rounds at counts -10, 0, and +15 for each possible deviation (under the above betting strategy). The following command runs such a test:
-
-```blackjack -S -n 3M -c B -d```
-
-The observed house edges are as follows:
+Given the large number of possible deviations, it seemed impractical to run large numbers of simulations for each count value for each possible deviation. To narrow in on a shortlist of viable deviations, we first ran smaller simulations of 3 million rounds at counts -10, 0, and +15 for each possible deviation (under the above betting strategy). The observed house edges are as follows:
 
 |Deviation|-10|0|+15|
 |---|---|---|---|
@@ -206,11 +193,7 @@ Based on this rough estimate, the viable deviations are:
 - double soft 13/14 against 7
 - don't surrender hard 14
 
-The other possible deviations did not show significant improvements from basic strategy at either low, high, or middling counts, and thus did not warrant further investigation. We did more thorough tests of the shortlisted viable deviations, running simulations of 3 million rounds at each count from -10 to 15. The following command runs the test
-
-```blackjack -S -n 3M -c A -d```
-
-The per-count edges for each viable deviation are as follows:
+The other possible deviations did not show significant improvements from basic strategy at either low, high, or middling counts. More thorough tests of the shortlisted viable deviations were run with simulations of 3 million rounds at each count from -10 to 15. The per-count edges for each viable deviation are as follows:
 
 |Count|Baseline|split 9 against 7|split A against A|dbl soft 17/18 against 2|dbl soft 13/14 against 4|dbl soft 13/14 against 7|don't surrender hard 14|
 |---|---|---|---|---|---|---|---|
@@ -241,17 +224,13 @@ The per-count edges for each viable deviation are as follows:
 |14|-0.0054682750157349115|-0.004920584473516753|-0.004764577596430223|-0.005429666087455441|-0.004500599387333098|-0.004366393292507006|-0.005577021214551287|
 |15|-0.006123833737123767|-0.006505736265983462|-0.0057997148444618955|-0.005782548573829851|-0.006168052075461693|-0.00475935352985052|-0.005886061481225696|
 
-The results showed significant variance due to the relatively small number of rounds. Nevertheless they seem sufficient to conclude that deviating from basic strategy would not yield significant edge improvements, even with counting in view.
+The results showed significant variance due to the relatively small number of rounds, but they look sufficient to conclude that deviating from basic strategy would not yield significant edge improvements even with counting.
 
 
 <hr />
 
 ## How practical is this?
-The results above indicate theoretical long-term profits. In practice, however, time and money constraints might limit the effectiveness of card-counting as a money-making method. To get a sense for how the above strategy might play out in practice, we run 144000 round simulations, corresponding to approximate number of rounds that may be expected to be played in a year (50 weeks x 48 hours/week x 1 round/min). The following command in Powershell runs 100 such simulations:
-
-```foreach ($i in 1..100){echo "===== TRIAL $i =====";blackjack -S -n 144000;echo "";echo ""}```
-
-The raw results from these trials are in practical-trial.txt. A summary of the key findings is as follows:
+The results above indicate theoretical long-term profits. In practice, time and money constraints might limit the effectiveness of card-counting as a money-making method. To see how the above strategy might play out in practice, we ran 144000-round simulations (approximating the number of rounds played in a year: 50 weeks x 48 hours/week x 1 round/min). The following command in Powershell runs 100 such simulations: `foreach ($i in 1..100){echo "===== TRIAL $i =====";blackjack -S -n 144000;echo "";echo ""}`. The raw results from these trials are in practical-trial.txt. In summary:
 
 ||profit|lowest negative|highest positive|
 |---|---|---|---|
@@ -259,4 +238,4 @@ The raw results from these trials are in practical-trial.txt. A summary of the k
 |max|150525.0|-425.0|150750.0|
 |ave|18166.125|-24644.125|47603.875|
 
-We observe that although the average estimated annual profit is positive, the negative loss can go below -80k, and indeed goes below -50k in 14% of the trials. The average annual profits and highest positive profits also varied quite widely in the trials. So despite the theoretical profitability of the strategy above, it is in practice rather risky as a money-making method.
+Although the average estimated annual profit is positive, the negative loss can go below -80k, and indeed goes below -50k in 14% of trials. The average annual profits and highest positive profits also varied quite widely. So the strategy above, despite being theoretically profitable, rather risky as a money-making method in practice.
